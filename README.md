@@ -79,3 +79,14 @@ fetch → extract → normalize → validate → store → report
 | **validate** | Pydantic `BookRecord` schema — rejects bad/invalid records |
 | **store** | `output/books.json` (valid) and `output/errors.json` (invalid + reason) |
 | **report** | `output/run-report.json` — timings, counts, cache hits, failures |
+
+---
+
+## Validate normalized records (Stage 4)
+
+- `price_text` such as `"£51.77"` is converted to numeric `price_gbp = 51.77`; the raw `price_text` is kept alongside.
+- The canonical absolute `product_url` is used as the record identity.
+- Every record is validated against the Pydantic `BookRecord` schema.
+- **Valid** records → `output/books.json`.
+- **Invalid** records → `output/errors.json` with the reason.
+- **Idempotency** — `output/books.json` is keyed by `product_url`. Running twice still results in exactly **60 records, never 120**.
