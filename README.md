@@ -90,3 +90,11 @@ fetch → extract → normalize → validate → store → report
 - **Valid** records → `output/books.json`.
 - **Invalid** records → `output/errors.json` with the reason.
 - **Idempotency** — `output/books.json` is keyed by `product_url`. Running twice still results in exactly **60 records, never 120**.
+
+---
+
+## Survive failures, report the run (Stage 5)
+
+- Each book detail page is processed **independently** — one broken page cannot crash the whole run.
+- A deliberately **fake URL** is injected during every run (`.../fake-book-does-not-exist_999999/index.html`). It returns **404** (never retried), is **logged and skipped**, and lands in `output/errors.json` with its reason — the 60 real records survive untouched.
+- `output/run-report.json` captures the run: start time, duration, pages fetched, cache hits, valid records, invalid records, and failed pages.
