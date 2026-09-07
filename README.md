@@ -117,6 +117,10 @@ python src/main.py
 
 Run it once to fetch the live site; run it again and every rerun is served from `cache/` (`CACHE HIT`, ~1.5 s).
 
+### Why no browser is needed
+
+The core assignment does not need a browser because every required field is already present in the plain HTML the server returns — `requests` plus BeautifulSoup can read and parse all of it directly, so heavyweight browser automation (Selenium/Playwright) would only add unnecessary cost and complexity without extracting anything extra.
+
 ## Output files
 
 | File | Contents |
