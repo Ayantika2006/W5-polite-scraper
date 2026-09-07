@@ -32,3 +32,18 @@ A polite, cache-friendly web scraper for [**books.toscrape.com**](https://books.
 - **Never retry 403/404** — treated as permanent, skipped immediately.
 - **Retry once** on timeout or 5xx, after a short wait, then give up.
 - **No hammering** — a cold run makes ~64 requests (0.5 s apart); every rerun is served from `cache/`.
+
+---
+
+## Discover three catalogue pages (Stage 2)
+
+- Book URLs are **discovered**, never hardcoded.
+- The scraper parses `page-1.html`, then follows the site's own **next** link, stopping after page 3.
+- Relative URLs are resolved to absolute URLs with `urllib.parse.urljoin`, then deduplicated.
+- Expected output:
+
+```
+catalogue_pages=3
+discovered=60
+unique_urls=60
+```
