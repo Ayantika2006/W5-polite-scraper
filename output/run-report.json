@@ -1,0 +1,12 @@
+{
+  "start_time": "2026-09-07T18:47:36.912417+00:00",
+  "end_time": "2026-09-07T18:47:38.387919+00:00",
+  "duration_seconds": 1.48,
+  "pages_fetched": 3,
+  "cache_hits": 63,
+  "valid_records": 60,
+  "invalid_records": 1,
+  "failed_pages": [
+    "https://books.toscrape.com/catalogue/fake-book-does-not-exist_999999/index.html"
+  ]
+}

@@ -98,3 +98,58 @@ fetch → extract → normalize → validate → store → report
 - Each book detail page is processed **independently** — one broken page cannot crash the whole run.
 - A deliberately **fake URL** is injected during every run (`.../fake-book-does-not-exist_999999/index.html`). It returns **404** (never retried), is **logged and skipped**, and lands in `output/errors.json` with its reason — the 60 real records survive untouched.
 - `output/run-report.json` captures the run: start time, duration, pages fetched, cache hits, valid records, invalid records, and failed pages.
+
+---
+
+## Installation
+
+Requires **Python 3.10+**.
+
+```bash
+pip install -r requirements.txt
+```
+
+## Run
+
+```bash
+python src/main.py
+```
+
+Run it once to fetch the live site; run it again and every rerun is served from `cache/` (`CACHE HIT`, ~1.5 s).
+
+## Output files
+
+| File | Contents |
+|---|---|
+| `output/books.json` | 60 validated `BookRecord` objects |
+| `output/errors.json` | Invalid records with their reason (e.g. the injected fake URL) |
+| `output/run-report.json` | Run metadata: timings, cache hits, counts, failed pages |
+
+## Example run-report
+
+Sample produced after a warm (cache-hit) run:
+
+```json
+{
+  "start_time": "2026-09-07T18:47:36.912417+00:00",
+  "end_time": "2026-09-07T18:47:38.387919+00:00",
+  "duration_seconds": 1.48,
+  "pages_fetched": 3,
+  "cache_hits": 63,
+  "valid_records": 60,
+  "invalid_records": 1,
+  "failed_pages": [
+    "https://books.toscrape.com/catalogue/fake-book-does-not-exist_999999/index.html"
+  ]
+}
+```
+
+The `invalid_records: 1` and the `failed_pages` entry are the deliberately injected fake URL proving that a broken page is logged and skipped without crashing the run or corrupting the 60 real records.
+
+## Limitations & ethics note
+
+- **Scope** — only the first 3 catalogue pages / 60 books are scraped, by assignment. The site has 1000 books; we intentionally stop at page 3.
+- **Fragility** — selectors are tied to the current Books to Scrape HTML. If the site layout changes, selectors in `src/main.py` need updating.
+- **Ethics** — this code is written for an educational assignment against a dedicated sandbox site. It must **not** be pointed at any real store without reviewing that site's `robots.txt`, terms of service, laws, and API availability first.
+
+> **I will not reuse this code on another site without checking its rules and terms first.**
