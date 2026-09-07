@@ -47,3 +47,35 @@ catalogue_pages=3
 discovered=60
 unique_urls=60
 ```
+
+---
+
+## Extract book details (Stage 3)
+
+Each book detail page is parsed with BeautifulSoup and the following raw fields are extracted:
+
+| Field | Notes |
+|---|---|
+| `title` | Book title |
+| `product_url` | Canonical absolute URL — used as identity / dedup key |
+| `price_text` | Raw price text as scraped, e.g. `"£51.77"` |
+| `availability_text` | e.g. `"In stock (22 available)"` |
+| `rating_text` | e.g. `"Three"`, `"Five"` |
+| `description` | `null` when the page has no description — never invented |
+| `source_page` | Which catalogue page the book was discovered on |
+| `fetched_at` | ISO-8601 timestamp of when the detail page was fetched |
+
+### Architecture
+
+```
+fetch → extract → normalize → validate → store → report
+```
+
+| Stage | Responsibility |
+|---|---|
+| **fetch** | Polite HTTP client with caching, UA, timeout, delay, retry rules |
+| **extract** | Parse catalogue pages and book detail pages with BeautifulSoup |
+| **normalize** | Convert `price_text` `"£51.77"` → numeric `price_gbp` = `51.77` |
+| **validate** | Pydantic `BookRecord` schema — rejects bad/invalid records |
+| **store** | `output/books.json` (valid) and `output/errors.json` (invalid + reason) |
+| **report** | `output/run-report.json` — timings, counts, cache hits, failures |
